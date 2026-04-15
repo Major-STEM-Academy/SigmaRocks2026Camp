@@ -1,3 +1,11 @@
+Please download from here:
+https://developer.android.com/studio/archive
+
+Android Studio Ladybug Feature Drop | 2024.2.2 Canary 2 September 12, 2024
+
+
+
+
 Android Studio Ladybug Feature Drop | 2024.2.2
 Build #AI-242.23726.103.2422.12816248, built on December 17, 2024
 Runtime version: 21.0.4+-12422083-b607.1 x86_64
