@@ -2,11 +2,6 @@ package org.firstinspires.ftc.teamcode.opmode;
 
 import static org.firstinspires.ftc.teamcode.hardware.robotHardware.GATE_OPEN;
 
-import com.bylazar.configurables.annotations.Configurable;
-import com.bylazar.telemetry.TelemetryManager;
-import com.pedropathing.follower.Follower;
-import com.pedropathing.geometry.Pose;
-import com.pedropathing.paths.PathChain;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -17,7 +12,7 @@ import org.firstinspires.ftc.teamcode.hardware.robotHardware;
 
 import java.util.function.Supplier;
 
-@Configurable
+
 @Disabled
 @TeleOp(name = "motorpidf")
 public class pidfTest extends LinearOpMode {
@@ -33,15 +28,6 @@ public class pidfTest extends LinearOpMode {
     private final double SHOOTER_RPM_LONG = 1840; //36?
     private final double SHOOTER_RPM_CLEAR = -1000;
 
-    private double controller1Speed = 1;
-
-    private Follower follower;
-    public static Pose startingPose;
-    private boolean automatedDrive;
-    private Supplier<PathChain> pathChain;
-    private TelemetryManager telemetryM;
-    private boolean slowMode = false;
-    private double slowModeMultiplier = 0.3;
 
 
 
@@ -55,9 +41,9 @@ public class pidfTest extends LinearOpMode {
         robot.init(hardwareMap);
         start();
         double rpm = 1400;
-        double kp = 94.92;
-        double ki = 0.18;
-        double kd = 4.29;
+        double kp = 50;
+        double ki = 0;
+        double kd = 0;
         double kf = 11.5;
 
         int selectedState = 0;
@@ -73,7 +59,7 @@ public class pidfTest extends LinearOpMode {
 
         while (opModeIsActive()) {
 
-            robot.gate.setPosition(GATE_OPEN);
+
 
 
             if(gamepad1.right_bumper){
@@ -161,12 +147,6 @@ public class pidfTest extends LinearOpMode {
                     new PIDFCoefficients(kp, ki, kd, kf)
             );
 
-            if(gamepad1.left_stick_y > 0.5){
-                robot.motorintake.setPower(-1);
-            }
-            else{
-                robot.motorintake.setPower(0);
-            }
 
             idle();
             telemetry.addData("kp", kp);

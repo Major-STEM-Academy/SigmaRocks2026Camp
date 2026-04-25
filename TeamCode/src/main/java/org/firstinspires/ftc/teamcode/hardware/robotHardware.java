@@ -36,25 +36,12 @@ public class robotHardware {
     public DcMotor motorfr = null;
     public DcMotor motorbr = null;
     public DcMotor motorbl = null;
-    public DcMotor motorintake = null;
-    public DcMotorEx motorturret = null;
-    // The gate servo is to block artifacts before shoot motor is reaching a target rpm.
-    public Servo gate = null;
-    public Servo flapper2 = null;
-    // The flapper servo is to push the flapper inward so that artifacts can touch 3rd stage intake for shooting artifacts.
-    public Servo flapper3 = null;
-    //public CRServo pushServo = null;
-    public DcMotor elevator = null;
 
     public GoBildaPinpointDriver pinpoint = null;
-    public Limelight3A limelight;
 
     // Use DcMotorEx for shooter so we can control velocity (ticks/sec)
     public DcMotorEx motorshoot = null;
-
-    public DistanceSensor distanceF = null;
-    public DistanceSensor distanceR = null;
-    public DistanceSensor distanceL = null;
+    public Servo pusher = null;
 
 
     // Initial robot orientation
@@ -134,6 +121,8 @@ public class robotHardware {
         motorfr = hwMap.get(DcMotor.class, "fr");
         motorbl = hwMap.get(DcMotor.class, "bl");
         motorbr = hwMap.get(DcMotor.class, "br");
+        motorshoot = hwMap.get(DcMotorEx.class, "shoot");
+        pusher = hwMap.get(Servo.class, "push");
         //front right motor no encoder
 
 
@@ -142,15 +131,14 @@ public class robotHardware {
         motorbr.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         motorbl.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         // motorfl.setDirection(DcMotor.Direction.REVERSE);
-        motorfr.setDirection(DcMotor.Direction.REVERSE);
-        motorbr.setDirection(DcMotor.Direction.REVERSE);
+        motorfl.setDirection(DcMotor.Direction.REVERSE);
+        motorbl.setDirection(DcMotor.Direction.REVERSE);
 
 
         setDrivetrainMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
 
-        RevHubOrientationOnRobot.LogoFacingDirection logoDirection = RevHubOrientationOnRobot.LogoFacingDirection.BACKWARD;
-        RevHubOrientationOnRobot.UsbFacingDirection  usbDirection  = RevHubOrientationOnRobot.UsbFacingDirection.RIGHT;
+        RevHubOrientationOnRobot.LogoFacingDirection logoDirection = RevHubOrientationOnRobot.LogoFacingDirection.BACKWARD;RevHubOrientationOnRobot.UsbFacingDirection  usbDirection  = RevHubOrientationOnRobot.UsbFacingDirection.RIGHT;
         RevHubOrientationOnRobot orientationOnRobot = new RevHubOrientationOnRobot(logoDirection, usbDirection);
         imu = hwMap.get(IMU.class, "imu");
         imu.initialize(new IMU.Parameters(orientationOnRobot));
@@ -249,15 +237,7 @@ public class robotHardware {
         motorshoot.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
-    public void autoShoot(double rpm){
-        startShooterAtRPM(rpm + 100);
-        if(motorshoot.getVelocity() > ((rpm/2) - 100)){
-            motorintake.setPower(1.0);
-            // sleep(400);
-        }
-        motorintake.setPower(0.0);
 
-    }
     public void setShooterTargetRpm(double target_rpm) {
         shooter_target_rpm = target_rpm;
         shooter_target_ticks = Math.max(0, Math.min(MAX_TICKS_PER_SEC,
@@ -335,18 +315,6 @@ public class robotHardware {
         motorbr.setPower(0);
     }
 
-
-    public void turnOnIntakeSubsystem() {
-        motorintake.setPower(-1.0);
-        //servoL.setPower(-1.0);
-        //servoR.setPower(1.0);
-    }
-    public void turnOffIntakeSubsystem() {
-        motorintake.setPower(0);
-        //servoL.setPower(0);
-        //servoR.setPower(0);
-    }
-
     public void launch(int numShots) {
         switch (launchState) {
             case IDLE:
@@ -363,7 +331,7 @@ public class robotHardware {
                 break;
             case LAUNCH:
                 launchState = LAUNCH_STATES.LAUNCHING;
-                turnOnIntakeSubsystem();
+                //turnOnIntakeSubsystem();
                 shootTimer.reset();
                 /*
                 trigger.setPosition(TRIGGER_SHOOT);
@@ -378,7 +346,7 @@ public class robotHardware {
                 }
                 break;
             case LAUNCHED:
-                turnOffIntakeSubsystem();
+                //turnOffIntakeSubsystem();
                 bShootRequested = false;
                 launchState = LAUNCH_STATES.IDLE;
                 /*
