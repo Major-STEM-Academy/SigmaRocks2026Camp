@@ -36,14 +36,15 @@ public class Opmode8 extends LinearOpMode {
     boolean bLaunchRequested = false;
     boolean last_right_bumper=false;
     boolean IsPusherOpen=true;
+    boolean need_back_spin=false;
+    ElapsedTime backSpinTimer = new ElapsedTime();
     public enum LAUNCH_STATES {
         IDLE,
         SPIN_UP,
         LAUNCH,
         LAUNCHED,   // trigger back to READY
     }
-    public LAUNCH_STATES LaunchState
-            ;
+    public LAUNCH_STATES LaunchState;
     @Override
     public void runOpMode() {
         waitForStart();
@@ -54,13 +55,13 @@ public class Opmode8 extends LinearOpMode {
         while (opModeIsActive()) {
 //DRIVING
             double x_dir = gamepad1.left_stick_x * controller1Speed;
-            double y_dir = -gamepad1.left_stick_y * controller1Speed;
+            double y_dir = gamepad1.left_stick_y * controller1Speed;
             double turn = gamepad1.right_stick_x * controller1Speed;
 
-            double flPower =  x_dir - y_dir + turn;
-            double blPower = -x_dir + y_dir + turn;
-            double frPower = -x_dir + y_dir- turn;
-            double brPower =  x_dir - y_dir - turn;
+            double flPower = -x_dir + y_dir - turn;
+            double blPower =  x_dir + y_dir - turn;
+            double frPower =  x_dir + y_dir + turn;
+            double brPower = -x_dir + y_dir + turn;
 
             // The following code it ensure power of all motors are scaling down properly
             // so that the power is within the range [-1.0, 1.0]
@@ -77,14 +78,15 @@ public class Opmode8 extends LinearOpMode {
             robot.setDrivePower(flPower, frPower, blPower, brPower);
 
             if(gamepad2.left_trigger>=0.2){
-                robot.motorshoot.setVelocity(ShootSpeed);
-            }else if(gamepad2.left_bumper){
-                robot.motorshoot.setVelocity(0);
+                need_back_spin=true;
+                backSpinTimer.reset();
             }
 
+            if(gamepad2.left_bumper){
+                robot.pusher.setPosition(0);
+            } else if(IsPusherOpen) robot.pusher.setPosition(0.7);
+            else robot.pusher.setPosition(1);
             if(gamepad2.right_bumper&&!last_right_bumper){
-                if(IsPusherOpen) robot.pusher.setPosition(0.5);
-                else robot.pusher.setPosition(1);
                 last_right_bumper=true;
                 IsPusherOpen=!IsPusherOpen;
             }else if(!gamepad2.right_bumper){
@@ -95,12 +97,21 @@ public class Opmode8 extends LinearOpMode {
                 TimeFromSpinUp.reset();
                 LaunchState = LAUNCH_STATES.IDLE;
             }
+            backSpin();
             launch();
             idle();
 
             //pusher=1开
             //pusher=0.5合
             //pusher-0推
+        }
+    }
+    void backSpin(){
+        if(!need_back_spin) return;
+        robot.motorshoot.setVelocity(-1000);
+        if(backSpinTimer.seconds()>0.2){
+            need_back_spin=false;
+            robot.motorshoot.setVelocity(0);
         }
     }
      void launch(){
@@ -110,7 +121,7 @@ public class Opmode8 extends LinearOpMode {
         switch(LaunchState){
             case IDLE:
                 TimeFromSpinUp.reset();
-                robot.pusher.setPosition(0.5);
+                robot.pusher.setPosition(0.7);
                 robot.motorshoot.setVelocity(ShootSpeed);
                 LaunchState=LAUNCH_STATES.SPIN_UP;
                 telemetry.addLine("LaunchState: IDLE");

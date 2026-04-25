@@ -13,6 +13,7 @@ import static org.firstinspires.ftc.teamcode.hardware.robotHardware.INTAKE_POWER
 
 import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -28,8 +29,7 @@ import org.firstinspires.ftc.teamcode.opmode.Opmode8;
 import org.firstinspires.ftc.teamcode.opmode.Opmode8.LAUNCH_STATES;
 
 import java.util.function.Supplier;
-
-@TeleOp(name = "auto")
+@Autonomous(name = "auto")
 public class auto extends LinearOpMode {
     private boolean bLaunchReqeusted = true;
     ElapsedTime TimeFromSpinUp = new ElapsedTime();
@@ -47,14 +47,15 @@ public class auto extends LinearOpMode {
         robot.init(hardwareMap);
         waitForStart();
 
-        robot.setDrivePower(-0.3, -0.3, -0.3, -0.3);
-        sleep(2000);
+        robot.setDrivePower(0.3, 0.3, 0.3, 0.3);
+        sleep(3000);
         robot.setDrivePower(0, 0, 0, 0);
         TimeFromSpinUp.reset();
         while(bLaunchReqeusted)
             launch();
-        robot.setDrivePower(1.0,-1.0,-1.0,1.0);
-        sleep(1000);
+        robot.setDrivePower(-0.3,0.3,0.3,-0.3);
+        //reverse for blue side
+        sleep(1670);
         robot.setDrivePower(0, 0, 0, 0);
     }
     void launch(){
@@ -64,8 +65,8 @@ public class auto extends LinearOpMode {
         switch(LaunchState){
             case IDLE:
                 TimeFromSpinUp.reset();
-                robot.pusher.setPosition(0.5);
-                robot.motorshoot.setVelocity(2000);
+                robot.pusher.setPosition(0.7);
+                robot.motorshoot.setVelocity(1000);
                 LaunchState= LAUNCH_STATES.SPIN_UP;
                 telemetry.addData("case","IDLE");
                 break;
