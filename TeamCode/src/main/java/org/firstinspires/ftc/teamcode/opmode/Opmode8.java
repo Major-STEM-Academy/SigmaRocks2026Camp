@@ -97,8 +97,10 @@ public class Opmode8 extends LinearOpMode {
                 TimeFromSpinUp.reset();
                 LaunchState = LAUNCH_STATES.IDLE;
             }
-            backSpin();
-            launch();
+            if(need_back_spin)
+                backSpin();
+            else
+                launch();
             idle();
 
             //pusher=1开

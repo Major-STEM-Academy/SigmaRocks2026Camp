@@ -48,13 +48,14 @@ public class auto extends LinearOpMode {
         waitForStart();
 
         robot.setDrivePower(0.3, 0.3, 0.3, 0.3);
-        sleep(3000);
+        sleep(3200);
         robot.setDrivePower(0, 0, 0, 0);
         TimeFromSpinUp.reset();
         while(bLaunchReqeusted)
             launch();
         robot.setDrivePower(-0.3,0.3,0.3,-0.3);
-        //reverse for blue side
+        //0.3,-0.3,-0.3,0.3 for blue side
+        //-0.3,0.3,0.3,-0.3 for red side
         sleep(1670);
         robot.setDrivePower(0, 0, 0, 0);
     }
